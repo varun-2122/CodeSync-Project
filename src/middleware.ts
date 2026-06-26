@@ -1,6 +1,9 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 
 // Standard Clerk session token checker intercepting all page routing requests
+console.log("DEBUG MIDDLEWARE: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY =", process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
+console.log("DEBUG MIDDLEWARE: CLERK_SECRET_KEY length =", process.env.CLERK_SECRET_KEY ? process.env.CLERK_SECRET_KEY.length : 0);
+
 export default clerkMiddleware();
 
 export const config = {
