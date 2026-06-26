@@ -4,7 +4,7 @@
 const authConfig = {
   providers: [
     {
-      domain: "https://factual-polliwog-88.clerk.accounts.dev/",
+      domain: "https://strong-giraffe-32.clerk.accounts.dev/",
       applicationID: "convex",
     },
   ],
