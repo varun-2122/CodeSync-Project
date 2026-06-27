@@ -7,31 +7,55 @@ import { Loader } from "../common/Loader";
 import { getStreamToken } from "@/actions/streamAuth";
 
 export const VideoProvider = ({ children }: { children: ReactNode }) => {
-  const [videoClient, setVideoClient] = useState<StreamVideoClient>();
+  const [videoClient, setVideoClient] = useState<StreamVideoClient | null>(null);
+  const [streamReady, setStreamReady] = useState(false);
   const { user: clerkUser, isLoaded } = useUser();
 
   useEffect(() => {
-    if (!isLoaded || !clerkUser) return;
+    if (!isLoaded) return;
+    if (!clerkUser) {
+      setStreamReady(true);
+      return;
+    }
 
-    const setupStreamClient = new StreamVideoClient({
-      apiKey: process.env.NEXT_PUBLIC_STREAM_API_KEY!,
-      user: {
-        id: clerkUser.id,
-        name: clerkUser.fullName || clerkUser.username || clerkUser.id,
-        image: clerkUser.imageUrl,
-      },
-      tokenProvider: getStreamToken,
-    });
+    const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY;
+    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("Your ") || apiKey === "";
 
-    setVideoClient(setupStreamClient);
+    if (isApiKeyPlaceholder) {
+      console.warn("Stream API key is not configured or is a placeholder. Video functionality will be disabled.");
+      setStreamReady(true);
+      return;
+    }
 
-    return () => {
-      setupStreamClient.disconnectUser();
-    };
+    try {
+      const setupStreamClient = new StreamVideoClient({
+        apiKey: apiKey,
+        user: {
+          id: clerkUser.id,
+          name: clerkUser.fullName || clerkUser.username || clerkUser.id,
+          image: clerkUser.imageUrl,
+        },
+        tokenProvider: getStreamToken,
+      });
+
+      setVideoClient(setupStreamClient);
+      setStreamReady(true);
+
+      return () => {
+        setupStreamClient.disconnectUser();
+      };
+    } catch (err) {
+      console.error("Failed to initialize Stream Video Client:", err);
+      setStreamReady(true);
+    }
   }, [clerkUser, isLoaded]);
 
-  if (!videoClient) {
+  if (!isLoaded || !streamReady) {
     return <Loader />;
+  }
+
+  if (!videoClient) {
+    return <>{children}</>;
   }
 
   return <StreamVideo client={videoClient}>{children}</StreamVideo>;
