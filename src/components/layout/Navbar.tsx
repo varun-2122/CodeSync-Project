@@ -15,7 +15,7 @@ export function Navbar() {
         >
           <Terminal className="size-6 text-emerald-500" />
           <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
-            CodeSync
+            InterviewHub
           </span>
         </Link>
 

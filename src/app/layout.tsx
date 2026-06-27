@@ -20,7 +20,7 @@ const fontMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "CodeSync - Technical Assessment Workspace",
+  title: "InterviewHub - Technical Assessment Workspace",
   description: "Collaborative workspace for real-time live coding technical interviews",
 };
 
